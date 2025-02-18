@@ -3,11 +3,27 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var createError = require("http-errors");
+const methodOverride = require("method-override");
 var { engine } = require("express-handlebars");
+var bodyParser = require("body-parser");
 var mainRouter = require("./routes/main");
+var mongoose = require("mongoose");
+
+// kết nối tới cơ sở dữ liệu MongoDB
+mongoose.connect("mongodb://localhost:27017/shop_lego", {});
+const db = mongoose.connection;
+db.on("error", console.error.bind(console, "connection error:"));
+db.once("open", function () {
+  console.log("Connected successfully");
+});
 
 var app = express();
 
+// thiết lập method-override
+app.use(methodOverride("_method"));
+// thiết lập body-parser
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 // thiết lập view engine
 app.set("views", path.join(__dirname, "views"));
 app.engine("hbs", engine({ extname: ".hbs" }));
